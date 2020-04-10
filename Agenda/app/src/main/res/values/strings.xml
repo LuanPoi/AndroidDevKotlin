@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Agenda</string>
+
+    <string-array name="contact_type_list">
+        <item>Casa</item>
+        <item>Trabalho</item>
+        <item>Outro</item>
+
+    </string-array>
+</resources>
