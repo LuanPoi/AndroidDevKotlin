@@ -1,47 +1,76 @@
 package com.example.agenda
 
-import androidx.appcompat.app.AppCompatActivity
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ListView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var listViewUsers: ListView
-    lateinit var floatingActionButtonAdd: FloatingActionButton
+    lateinit var buttonAdd: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         listViewUsers = findViewById(R.id.listViewUsers)
-        floatingActionButtonAdd = findViewById(R.id.floatingActionButtonAdd)
+        updateList()
 
-        Model.itemList.add(User("Luan", "Dra.Otillia dos Santos França, 103", "43999713885", 1.toUByte()))
-        Model.itemList.add(User("Jeferson", "Dra.Otillia dos Santos França, 103", "43999713885", 1.toUByte()))
-        Model.itemList.add(User("Arthur", "Dra.Otillia dos Santos França, 103", "43999713885", 1.toUByte()))
-        Model.itemList.add(User("Zacarias", "Dra.Otillia dos Santos França, 103", "43999713885", 1.toUByte()))
+        listViewUsers.setOnItemClickListener { parent, view, position, id ->
+            var i = Intent(this, EditorActivity::class.java)
+            i.putExtra("selectedUserIndex", position)
+            startActivity(i)
+        }
 
-//        var listOfUsers = Model.itemList.map { User ->
-//            (User.name
-//                    + "\n" + User.address
-//                    + "\n" + User.phone
-//                    + "\n" + User.contactType)
-//        }
-//
-//        var listOfBodies = Model.itemList.map { User ->  }
-//        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
-//            this,
-//            android.R.layout.simple_list_item_1,
-//            android.R.id.text1,
-//            listOfUsers
-//
-//        )
-//        listViewUsers.adapter = adapter
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_INTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            Log.d("teste","Deu merda dnv")
+        }
 
-        listViewUsers.adapter = UserAdapter(this, Model.itemList)
+    }
 
-        Log.d("bla", "bla")
+    override fun onResume() {
+        super.onResume()
+        updateList()
+    }
+
+    fun floatingActionButtonAddPressed(v: View): Unit{
+        startActivity(Intent(this, EditorActivity::class.java))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("Checkpoint", "OnPause reached")
+        Model.saveFile()
+    }
+
+    fun updateList(){
+        var listOfUsers = Model.itemList.map { User ->
+            (User.name
+                    + "\n" + User.address
+                    + "\n" + User.phone
+                    + "\n" + User.contactType)
+        }
+
+        var adapter: ArrayAdapter<String> = ArrayAdapter<String>(
+            this,
+            android.R.layout.simple_list_item_1,
+            android.R.id.text1,
+            listOfUsers
+
+        )
+        listViewUsers.adapter = adapter
     }
 }

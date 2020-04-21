@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">Agenda</string>
+    <string name="phone">Phone</string>
+    <string name="address">Address</string>
+    <string name="name">Name</string>
+    <string name="type">Type</string>
+    <string name="add">ADD</string>
+    <string name="usuarios">Usuários</string>
+    <string name="title">Agenda</string>
 
     <string-array name="contact_type_list">
         <item>Casa</item>
