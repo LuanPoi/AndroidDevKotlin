@@ -1,5 +1,6 @@
 package com.example.agenda
 
+import android.os.Environment
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
@@ -15,7 +16,9 @@ object Model {
     fun saveFile(){
         //onPause()
         try {
-            var file: File = File("lista.txt")
+            var absPath: String = Environment.getExternalStorageDirectory().absolutePath
+            var file: File = File(absPath + File.separator + "lista.txt")
+            file.mkdirs()
             file.createNewFile()
             var stream: FileOutputStream = FileOutputStream(file)
             var writer: OutputStreamWriter = OutputStreamWriter(stream)

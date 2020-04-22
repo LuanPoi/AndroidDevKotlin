@@ -3,6 +3,7 @@ package com.example.agenda
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,10 +11,8 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStreamWriter
 
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        requestAppPermissions()
 
         listViewUsers = findViewById(R.id.listViewUsers)
         updateList()
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(i)
         }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_INTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted
             Log.d("teste","Deu merda dnv")
@@ -72,5 +72,34 @@ class MainActivity : AppCompatActivity() {
 
         )
         listViewUsers.adapter = adapter
+    }
+
+    private fun requestAppPermissions() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return
+        }
+        if (hasReadPermissions() && hasWritePermissions()) {
+            return
+        }
+        ActivityCompat.requestPermissions(
+            this, arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ),0
+        ) // your request code
+    }
+
+    private fun hasReadPermissions(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            baseContext,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun hasWritePermissions(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            baseContext,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
     }
 }
