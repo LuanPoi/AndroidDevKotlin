@@ -1,5 +1,8 @@
 package com.example.agenda
 
+import android.content.Context
+import com.example.agenda.MainActivity
+
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -8,6 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
+import java.io.FileOutputStream
 
 class EditorActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     lateinit var editTextNameInput: EditText
@@ -78,10 +82,30 @@ class EditorActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             Model.itemList[index].address = editTextAddressInput.text.toString()
             Model.itemList[index].phone = editTextPhoneInput.text.toString()
             Model.itemList[index].contactType = spinnerInput.selectedItemPosition
+            saveFile()
             finish()
         }else{
             Model.itemList.add(User(editTextNameInput.text.toString(), editTextAddressInput.text.toString(), editTextPhoneInput.text.toString(), spinnerInput.selectedItemPosition))
             finish()
+        }
+    }
+
+    fun saveFile(){
+        //onPause()
+        var fileOutputStream: FileOutputStream
+        try {
+            fileOutputStream = openFileOutput("lista.txt", Context.MODE_PRIVATE)
+
+            for (item in Model.itemList){
+                fileOutputStream.write("${item.name}\n".toByteArray())
+                fileOutputStream.write("${item.address}\n".toByteArray())
+                fileOutputStream.write("${item.phone}\n".toByteArray())
+                fileOutputStream.write("${item.contactType}\n".toByteArray())
+            }
+
+            fileOutputStream.close()
+        }catch (e: Exception){
+            e.printStackTrace()
         }
     }
 

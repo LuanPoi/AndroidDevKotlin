@@ -1,6 +1,7 @@
 package com.example.agenda
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -13,6 +14,7 @@ import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import java.io.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -22,7 +24,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        requestAppPermissions()
+
+        if(File("lista.txt").exists()){
+            loadFile()
+        }
 
         listViewUsers = findViewById(R.id.listViewUsers)
         updateList()
@@ -33,27 +38,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(i)
         }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            Log.d("teste","Deu merda dnv")
-        }
-
     }
 
     override fun onResume() {
         super.onResume()
         updateList()
-    }
-
-    fun floatingActionButtonAddPressed(v: View): Unit{
-        startActivity(Intent(this, EditorActivity::class.java))
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("Checkpoint", "OnPause reached")
-        Model.saveFile()
     }
 
     fun updateList(){
@@ -74,32 +63,35 @@ class MainActivity : AppCompatActivity() {
         listViewUsers.adapter = adapter
     }
 
-    private fun requestAppPermissions() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            return
+    fun loadFile(){
+        //onCreate()
+        var lista: ArrayList<String> = ArrayList<String>()
+        try {
+            var fileInputStream: FileInputStream? = null
+            fileInputStream = openFileInput("lista.txt")
+            var inputStreamReader: InputStreamReader = InputStreamReader(fileInputStream)
+            val bufferedReader: BufferedReader = BufferedReader(inputStreamReader)
+            val stringBuilder: StringBuilder = StringBuilder()
+            var text: String? = null
+
+            var counter: Int = 0
+            while ({ text = bufferedReader.readLine(); text }() != null) {
+                counter++
+                if(text != null){
+                    lista.add(text!!)
+                }
+                if(counter == 4){
+                    Model.itemList.add(User(lista[0], lista[1], lista[2], lista[3].toInt()))
+                    lista.removeAll(lista)
+                }
+            }
+            Log.d("bla","${stringBuilder.toString()}")
+        }catch (e: Exception){
+            e.printStackTrace()
         }
-        if (hasReadPermissions() && hasWritePermissions()) {
-            return
-        }
-        ActivityCompat.requestPermissions(
-            this, arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ),0
-        ) // your request code
     }
 
-    private fun hasReadPermissions(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            baseContext,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun hasWritePermissions(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            baseContext,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
+    fun floatingActionButtonAddPressed(v: View): Unit{
+        startActivity(Intent(this, EditorActivity::class.java))
     }
 }

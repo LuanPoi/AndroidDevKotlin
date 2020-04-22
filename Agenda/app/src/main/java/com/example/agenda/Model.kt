@@ -1,39 +1,8 @@
 package com.example.agenda
 
-import android.os.Environment
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStreamWriter
+import android.content.Context
+import java.io.*
 
 object Model {
     var itemList = ArrayList<User>()
-
-    fun loadFile(){
-        //onStart()
-        TODO()
-    }
-
-    fun saveFile(){
-        //onPause()
-        try {
-            var absPath: String = Environment.getExternalStorageDirectory().absolutePath
-            var file: File = File(absPath + File.separator + "lista.txt")
-            file.mkdirs()
-            file.createNewFile()
-            var stream: FileOutputStream = FileOutputStream(file)
-            var writer: OutputStreamWriter = OutputStreamWriter(stream)
-            for (item in Model.itemList){
-                writer.write("${item.name}+\n")
-                writer.write("${item.address}+\n")
-                writer.write("${item.phone}+\n")
-                writer.write("${item.contactType}+\n")
-                writer.write("-")
-            }
-            writer.flush()
-            writer.close()
-            stream.close()
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
-    }
 }
