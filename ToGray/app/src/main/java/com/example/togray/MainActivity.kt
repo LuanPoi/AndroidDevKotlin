@@ -3,6 +3,8 @@ package com.example.togray
 import android.content.res.AssetManager
 import android.graphics.*
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 
@@ -11,7 +13,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+    }
 
+    fun buttonClicked(v: View){
         var imageView: ImageView = findViewById(R.id.imageView)
         var assetManager: AssetManager = this.assets
 
@@ -26,11 +30,15 @@ class MainActivity : AppCompatActivity() {
             val paint = Paint()
             paint.colorFilter = colorFilter
 
-            var canvas: Canvas = Canvas(image)
+            val width: Int = image.width
+            val height: Int = image.height
+            var image2: Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            var canvas: Canvas = Canvas(image2)
             canvas.drawBitmap(image, 0F,0F, paint)
-            imageView.setImageBitmap(image)
+            imageView.setImageBitmap(image2)
         }catch (e: Exception){
             e.printStackTrace()
         }
+        Log.d("bla","Bla")
     }
 }
